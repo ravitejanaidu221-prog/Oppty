@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Weather App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .weather-container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            width: 300px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        input {
+            padding: 10px;
+            width: 80%;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            background-color: #4facfe;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #00c6ff;
+        }
+
+        .result {
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="weather-container">
+    <h2>Weather App </h2>
+    <input type="text" id="city" placeholder="Enter city name">
+    <br>
+    <button onclick="getWeather()">Get Weather</button>
+
+    <div class="result" id="result"></div>
+</div>
+
+<script>
+    async function getWeather() {
+        const city = document.getElementById("city").value;
+        const apiKey = "YOUR_API_KEY";
+        const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+
+            if (response.ok) {
+                document.getElementById("result").innerHTML = `
+                    <h3>${data.name}</h3>
+                    <p>🌡 Temperature: ${data.main.temp} °C</p>
+                    <p>🌥 Weather: ${data.weather[0].description}</p>
+                    <p>💧 Humidity: ${data.main.humidity}%</p>
+                `;
+            } else {
+                document.getElementById("result").innerHTML = `<p style="color:red;">City not found!</p>`;
+            }
+        } catch (error) {
+            document.getElementById("result").innerHTML = `<p style="color:red;">Error fetching data</p>`;
+        }
+    }
+</script>
+
+</body>
+</html>

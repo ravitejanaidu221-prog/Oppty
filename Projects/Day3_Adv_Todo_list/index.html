@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hourly Sync To-Do</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #eef2f3; display: flex; justify-content: center; padding: 20px; }
+        .app { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 350px; }
+        .status-bar { font-size: 12px; color: #666; margin-bottom: 15px; padding: 5px; background: #f8f9fa; border-radius: 5px; text-align: center; }
+        input, button { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; }
+        button { background: #4A90E2; color: white; border: none; font-weight: bold; cursor: pointer; }
+        .task { display: flex; justify-content: space-between; padding: 12px; margin-bottom: 8px; border-radius: 8px; background: #fff; border: 1px solid #eee; }
+        .urgent { border-left: 5px solid #ff4757; background: #fff5f5; animation: glow 2s infinite; }
+        @keyframes glow { 0% { box-shadow: 0 0 5px #ff475766; } 50% { box-shadow: 0 0 15px #ff475766; } 100% { box-shadow: 0 0 5px #ff475766; } }
+        .date-label { font-size: 11px; color: #888; text-transform: uppercase; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="app">
+    <div id="status" class="status-bar">Syncing...</div>
+    <h2> Schedule</h2>
+    <input type="date" id="date">
+    <input type="time" id="time">
+    <input type="text" id="taskInput" placeholder="New task...">
+    <button onclick="addTask()">Add Task</button>
+    <div id="taskList"></div>
+</div>
+
+<script>
+    let tasks = JSON.parse(localStorage.getItem("hourlyTasks")) || [];
+
+    const now = new Date();
+    document.getElementById('date').value = now.toISOString().split('T')[0];
+    document.getElementById('time').value = now.toTimeString().slice(0,5);
+
+    function addTask() {
+        const date = document.getElementById("date").value;
+        const time = document.getElementById("time").value;
+        const text = document.getElementById("taskInput").value;
+        if (!text || !date) return alert("Fill in the task and date!");   
+
+        tasks.push({ date, time, text });
+        saveAndRender();
+        document.getElementById("taskInput").value = "";
+    }
+
+    function saveAndRender() {
+        localStorage.setItem("hourlyTasks", JSON.stringify(tasks));
+        const list = document.getElementById("taskList");
+        const status = document.getElementById("status");
+        list.innerHTML = "";
+
+        const currentHour = new Date().getHours();
+        const today = new Date().toISOString().split('T')[0];
+
+        tasks.sort((a, b) => new Date(`${a.date}T${a.time}`) - new Date(`${b.date}T${b.time}`));
+
+        tasks.forEach((t, i) => {
+            const taskHour = parseInt(t.time.split(':')[0]);
+            const isUrgent = t.date === today && taskHour === currentHour;
+
+            list.innerHTML += `
+                <div class="task ${isUrgent ? 'urgent' : ''}">
+                    <div>
+                        <div class="date-label">${t.date}</div>
+                        <strong>${t.time}</strong> - ${t.text}
+                    </div>
+                    <button style="width:30px; border:none; background:none; color:red; cursor:pointer;" onclick="remove(${i})">✕</button>
+                </div>`;
+        });
+
+        status.innerText = `Updated: ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+    }
+
+    function remove(i) {
+        tasks.splice(i, 1);
+        saveAndRender();
+    }
+    saveAndRender();
+</script>
+
+</body>
+</html>
