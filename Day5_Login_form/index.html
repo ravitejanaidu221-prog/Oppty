@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Register</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:linear-gradient(120deg,#4facfe,#00f2fe);
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+}
+
+.container{
+background:white;
+padding:30px;
+border-radius:10px;
+width:300px;
+text-align:center;
+}
+
+input{
+width:100%;
+padding:10px;
+margin:10px 0;
+border:1px solid #ccc;
+border-radius:5px;
+}
+
+button{
+padding:10px;
+width:100%;
+background:#007bff;
+color:white;
+border:none;
+border-radius:5px;
+cursor:pointer;
+}
+
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+<h2>Register</h2>
+
+<input type="text" id="username" placeholder="Enter Username">
+<input type="password" id="password" placeholder="Enter Password">
+
+<button onclick="register()">Register</button>
+
+<p id="msg"></p>
+
+</div>
+
+<script>
+
+function register(){
+
+let user=document.getElementById("username").value;
+let pass=document.getElementById("password").value;
+
+if(user=="" || pass==""){
+document.getElementById("msg").innerText="Fill all fields";
+return;
+}
+
+localStorage.setItem("username",user);
+localStorage.setItem("password",pass);
+
+alert("Registered Successfully")
+
+setTimeout(()=>{
+window.location.href="login.html";
+},1000);
+
+}
+
+</script>
+
+</body>
+</html>
