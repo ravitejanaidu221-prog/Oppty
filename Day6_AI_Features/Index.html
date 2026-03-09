@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>DesignFrame Studio</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial;
+}
+
+body{
+height:100vh;
+background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+display:flex;
+flex-direction:column;
+color:white;
+}
+
+/* TOP BAR */
+
+.topbar{
+height:60px;
+background:rgba(0,0,0,0.4);
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:0 30px;
+backdrop-filter:blur(10px);
+}
+
+.logo{
+font-size:22px;
+font-weight:bold;
+}
+
+/* WORKSPACE */
+
+.workspace{
+flex:1;
+display:flex;
+justify-content:center;
+align-items:center;
+position:relative;
+}
+
+/* CANVAS */
+
+.canvas{
+width:650px;
+height:450px;
+background:white;
+border-radius:20px;
+display:flex;
+align-items:center;
+justify-content:center;
+position:relative;
+overflow:hidden;
+color:#777;
+}
+
+/* FLOATING TOOL PANEL */
+
+.panel{
+position:absolute;
+right:40px;
+top:80px;
+width:260px;
+background:rgba(255,255,255,0.1);
+backdrop-filter:blur(10px);
+padding:20px;
+border-radius:15px;
+}
+
+.panel input,
+.panel textarea,
+.panel button{
+width:100%;
+margin-top:8px;
+padding:10px;
+border-radius:6px;
+border:none;
+}
+
+.panel button{
+cursor:pointer;
+}
+
+.generate{
+background:#00c6ff;
+color:white;
+}
+
+.squareBtn{
+background:#3b82f6;
+color:white;
+}
+
+.circleBtn{
+background:#10b981;
+color:white;
+}
+
+.clearBtn{
+background:#ef4444;
+color:white;
+}
+
+.downloadBtn{
+background:linear-gradient(45deg,#6c63ff,#8e7dff);
+color:white;
+}
+
+/* SHAPES */
+
+.square{
+width:80px;
+height:80px;
+background:red;
+position:absolute;
+}
+
+.circle{
+width:80px;
+height:80px;
+background:green;
+border-radius:50%;
+position:absolute;
+}
+
+.loading{
+width:120px;
+height:120px;
+background:#1e293b;
+border-radius:10px;
+display:flex;
+align-items:center;
+justify-content:center;
+color:white;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="topbar">
+<div class="logo">DesignFrame Studio</div>
+<div>AI Creative Tool</div>
+</div>
+
+<div class="workspace">
+
+<div class="canvas" id="canvas">
+Your canvas is empty
+</div>
+
+<div class="panel">
+
+<h4>AI Image Generator</h4>
+<textarea id="prompt" placeholder="Describe the image"></textarea>
+<button class="generate" onclick="generateImage()">Generate</button>
+
+<h4>Add Shapes</h4>
+<button class="squareBtn" onclick="addShape('square')">Square</button>
+<button class="circleBtn" onclick="addShape('circle')">Circle</button>
+
+<h4>Frame Background</h4>
+<input type="color" id="bgColor">
+
+<h4>Frame Roundness</h4>
+<input type="range" id="roundness" min="0" max="50">
+
+<button class="clearBtn" onclick="clearCanvas()">Clear Canvas</button>
+<button class="downloadBtn" onclick="downloadFrame()">Download Frame</button>
+
+</div>
+
+</div>
+
+<script>
+
+const canvas=document.getElementById("canvas")
+
+function addShape(type){
+
+let shape=document.createElement("div")
+shape.className=type
+
+shape.style.top=Math.random()*350+"px"
+shape.style.left=Math.random()*500+"px"
+
+canvas.appendChild(shape)
+
+}
+
+function clearCanvas(){
+canvas.innerHTML="Your canvas is empty"
+}
+
+document.getElementById("bgColor").addEventListener("input",(e)=>{
+canvas.style.background=e.target.value
+})
+
+document.getElementById("roundness").addEventListener("input",(e)=>{
+canvas.style.borderRadius=e.target.value+"px"
+})
+
+async function generateImage(){
+
+let prompt=document.getElementById("prompt").value
+
+canvas.innerHTML=`<div class="loading">Generating...</div>`
+
+let img=document.createElement("img")
+
+img.src=`https://image.pollinations.ai/prompt/${prompt}`
+img.style.width="100%"
+img.style.height="100%"
+img.style.objectFit="cover"
+
+img.onload=function(){
+canvas.innerHTML=""
+canvas.appendChild(img)
+}
+
+}
+
+function downloadFrame(){
+
+html2canvas(canvas).then(canvasImg=>{
+
+let link=document.createElement("a")
+link.download="designframe.png"
+link.href=canvasImg.toDataURL()
+link.click()
+
+})
+
+}
+
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+</body>
+</html>
